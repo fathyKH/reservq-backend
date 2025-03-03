@@ -1,0 +1,1588 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "reservq",
+    "version": "1.0.0"
+  },
+  "servers": [
+    
+    {
+      "url": "https://reservq-backend.vercel.app"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "auth",
+      "description": "Test all authentications endpoints"
+    },
+    {
+      "name": "products",
+      "description": "Test all product operations and endpoints"
+    },
+    {
+      "name": "order",
+      "description": "Test all order operations and endpoints"
+    },
+    {
+      "name": "reports",
+      "description": "Test reports endpoint"
+    },
+    {
+      "name": "blogs",
+      "description": "Test all blog endpoints"
+    },
+    {
+      "name": "categories",
+      "description": "Test all categories endpoints"
+    },
+    {
+      "name": "discounts",
+      "description": "Test all discount endpoints"
+    }
+  ],
+  "paths": {
+    "/api/v1/user/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "register",
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": "{\r\n  \"firstName\": \"ahmed\",\r\n  \"lastName\": \"eid\",\r\n  \"email\": \"ahmed@gmail.com\",\r\n  \"password\": \"ahmed123\"\r\n}\r\n"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Cache-Control",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "no-cache"
+          },
+          {
+            "name": "Postman-Token",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "Content-Length",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "Host",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "PostmanRuntime/7.39.1"
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "*/*"
+          },
+          {
+            "name": "Accept-Encoding",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "gzip, deflate, br"
+          },
+          {
+            "name": "Connection",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "keep-alive"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "application/json"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/user/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "login",
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": "{\r\n    \"email\":\"admin@gmail.com\",\r\n    \"password\":\"ahmed123\"\r\n}"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Cache-Control",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "no-cache"
+          },
+          {
+            "name": "Postman-Token",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "Content-Length",
+            "in": "header",
+            "schema": {
+              "type": "integer"
+            },
+            "example": "0"
+          },
+          {
+            "name": "Host",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "PostmanRuntime/7.39.1"
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "*/*"
+          },
+          {
+            "name": "Accept-Encoding",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "gzip, deflate, br"
+          },
+          {
+            "name": "Connection",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "keep-alive"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "application/json"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reset-password": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "reset-password",
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": "{\r\n    \"password\":\"heehhee123\"\r\n}"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/product/add": {
+      "post": {
+        "tags": [
+          "products"
+        ],
+        "summary": "add_product",
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": "{\r\n      \"name\": \"Pork Chop with Apple Chutney\",\r\n      \"price\": 15,\r\n      \"rating\" : 4.7,\r\n      \"size\": \"Small\",\r\n      \"addon\":\"Soft Drinks\",\r\n      \"quantity\":1,\r\n      \"discount\": 20,\r\n      \"category\":\"67c248cebb89e605949edde4\",\r\n      \"images\": [\r\n        \"https://reservq.vercel.app/assets/traditional-3-248258a0.png\",\r\n        \"https://reservq.vercel.app/assets/slick-2-27cbc8f2.png\",\r\n        \"https://reservq.vercel.app/assets/slick-5-46f41764.png\",\r\n        \"https://reservq.vercel.app/assets/slick-4-884dd382.png\",\r\n        \"https://reservq.vercel.app/assets/slick-3-39226dc4.png\"\r\n\r\n      ],\r\n      \"ingredients\": [\r\n        \"Tomato Sauce\",\r\n        \"Mozzarella Cheese\",\r\n        \"Basil\"\r\n      ],\r\n\r\n      \"meal_contents\": [\r\n        {\r\n        \"item\": \"Chicken Pieces\",\r\n        \"quantity\": 4\r\n        },\r\n        {\r\n        \"item\": \"Spicy Sauce\",\r\n        \"quantity\": 1\r\n        }\r\n      ],\r\n\r\n      \"videoUrl\": \"https://www.youtube.com/embed/tJlzIJaokVY\"\r\n      \r\n    }"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Cache-Control",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "no-cache"
+          },
+          {
+            "name": "Postman-Token",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "Content-Length",
+            "in": "header",
+            "schema": {
+              "type": "integer"
+            },
+            "example": "0"
+          },
+          {
+            "name": "Host",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "PostmanRuntime/7.39.1"
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "*/*"
+          },
+          {
+            "name": "Accept-Encoding",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "gzip, deflate, br"
+          },
+          {
+            "name": "Connection",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "keep-alive"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "application/json"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/product/67bdf6b376ea16cbd0d2a508": {
+      "patch": {
+        "tags": [
+          "products"
+        ],
+        "summary": "update_product",
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": "{\r\n    \"name\": \"chicken burger\",\r\n    \"price\": 20,\r\n    \"quantity\": 3,\r\n    \"category\":\"67c248cebb89e605949edde4\"\r\n}"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YmRlZTI5ZDM1ZDZmOGRhZDg1MjQ3OCIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzQwNTAxODYzLCJleHAiOjE3NDA1ODgyNjN9.ZahRNS1mAVWZh-SSxNKekVNsVUXBs9uJ6DHofOD84Q0"
+          },
+          {
+            "name": "Cache-Control",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "no-cache"
+          },
+          {
+            "name": "Postman-Token",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "text/plain"
+          },
+          {
+            "name": "Content-Length",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "Host",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "PostmanRuntime/7.39.1"
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "*/*"
+          },
+          {
+            "name": "Accept-Encoding",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "gzip, deflate, br"
+          },
+          {
+            "name": "Connection",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "keep-alive"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "products"
+        ],
+        "summary": "get_product",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/product/67bdf37776ea16cbd0d2a4fa": {
+      "delete": {
+        "tags": [
+          "products"
+        ],
+        "summary": "delete_product",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products": {
+      "get": {
+        "tags": [
+          "products"
+        ],
+        "summary": "get_all_products",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/order/add": {
+      "post": {
+        "tags": [
+          "order"
+        ],
+        "summary": "add_order",
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": "{\r\n  \"products\": [\r\n    {\r\n      \"id\": \"67bdf6b376ea16cbd0d2a508\",\r\n      \"quantity\": 1\r\n    }\r\n  \r\n  ],\r\n  \"paymentMethod\": \"cash\"\r\n}\r\n"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Cache-Control",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "no-cache"
+          },
+          {
+            "name": "Postman-Token",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "Content-Length",
+            "in": "header",
+            "schema": {
+              "type": "integer"
+            },
+            "example": "0"
+          },
+          {
+            "name": "Host",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "PostmanRuntime/7.39.1"
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "*/*"
+          },
+          {
+            "name": "Accept-Encoding",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "gzip, deflate, br"
+          },
+          {
+            "name": "Connection",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "keep-alive"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "application/json"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/order/67be4b7ec6ae23ca16d29359": {
+      "delete": {
+        "tags": [
+          "order"
+        ],
+        "summary": "delete_order",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/order/67be4e1f384c32c82507b00c": {
+      "get": {
+        "tags": [
+          "order"
+        ],
+        "summary": "get_order",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders": {
+      "get": {
+        "tags": [
+          "order"
+        ],
+        "summary": "get_all_orders",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports": {
+      "get": {
+        "tags": [
+          "reports"
+        ],
+        "summary": "get_reports",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/blog/add": {
+      "post": {
+        "tags": [
+          "blogs"
+        ],
+        "summary": "add_blog",
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": "{\r\n  \"title\": \"My Awesome Blog Post\",\r\n  \"excerpt\": \"This is a brief summary of my blog post\",\r\n  \"image\": \"https://reservq.vercel.app/assets/news-2-2a38b17b.png\",\r\n  \"content\": \"This is the full content of my blog post. It can be a long text.\",\r\n  \"readTime\": \"5 minutes\",\r\n  \"category\": \"Stories , media\"\r\n}"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Cache-Control",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "no-cache"
+          },
+          {
+            "name": "Postman-Token",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "text/plain"
+          },
+          {
+            "name": "Content-Length",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "Host",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "PostmanRuntime/7.39.1"
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "*/*"
+          },
+          {
+            "name": "Accept-Encoding",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "gzip, deflate, br"
+          },
+          {
+            "name": "Connection",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "keep-alive"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/blog/67c24624a64664c2a3ea5662": {
+      "patch": {
+        "tags": [
+          "blogs"
+        ],
+        "summary": "update_blog",
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": "{\r\n  \"title\": \"My Awesome Blog Post\",\r\n  \"excerpt\": \"This is a brief of my blog post\",\r\n  \"image\": \"https://reservq.vercel.app/assets/news-2-2a38b17b.png\",\r\n  \"content\": \"This is the full content of my blog post. It can be a long text.\"\r\n}"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Cache-Control",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "no-cache"
+          },
+          {
+            "name": "Postman-Token",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "text/plain"
+          },
+          {
+            "name": "Content-Length",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "Host",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "PostmanRuntime/7.39.1"
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "*/*"
+          },
+          {
+            "name": "Accept-Encoding",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "gzip, deflate, br"
+          },
+          {
+            "name": "Connection",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "keep-alive"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "blogs"
+        ],
+        "summary": "delete_blog",
+        "parameters": [
+          {
+            "name": "Cache-Control",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "no-cache"
+          },
+          {
+            "name": "Postman-Token",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "text/plain"
+          },
+          {
+            "name": "Content-Length",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "Host",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "PostmanRuntime/7.39.1"
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "*/*"
+          },
+          {
+            "name": "Accept-Encoding",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "gzip, deflate, br"
+          },
+          {
+            "name": "Connection",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "keep-alive"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/blog/543aerdgagdagdf": {
+      "get": {
+        "tags": [
+          "blogs"
+        ],
+        "summary": "get_blog",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/blogs": {
+      "get": {
+        "tags": [
+          "blogs"
+        ],
+        "summary": "get_all_blogs",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/category/add": {
+      "post": {
+        "tags": [
+          "categories"
+        ],
+        "summary": "add_category",
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": "{\r\n    \"name\":\"fries\",\r\n    \"slug\":\"dinner\"\r\n}"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Cache-Control",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "no-cache"
+          },
+          {
+            "name": "Postman-Token",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "Host",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "PostmanRuntime/7.39.1"
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "*/*"
+          },
+          {
+            "name": "Accept-Encoding",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "gzip, deflate, br"
+          },
+          {
+            "name": "Connection",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "keep-alive"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "application/json"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/category/67c248cebb89e605949edde4": {
+      "patch": {
+        "tags": [
+          "categories"
+        ],
+        "summary": "update_category",
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": "{\r\n    \"name\":\"fries\",\r\n    \"slug\":\"dinner\",\r\n    \"isActive\":\"false\"\r\n}"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Cache-Control",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "no-cache"
+          },
+          {
+            "name": "Postman-Token",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "Content-Length",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "Host",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "PostmanRuntime/7.39.1"
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "*/*"
+          },
+          {
+            "name": "Accept-Encoding",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "gzip, deflate, br"
+          },
+          {
+            "name": "Connection",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "keep-alive"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "application/json"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "categories"
+        ],
+        "summary": "delete_category",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "categories"
+        ],
+        "summary": "get_category",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/categories": {
+      "get": {
+        "tags": [
+          "categories"
+        ],
+        "summary": "get_all_categories",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/discount/add": {
+      "post": {
+        "tags": [
+          "discounts"
+        ],
+        "summary": "add_discount",
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": "{\r\n  \"discountCode\": \"SUMMER20\",\r\n  \"discountPercentage\": 20,\r\n  \"validFrom\": \"2022-06-01T00:00:00.000Z\",\r\n  \"validTo\": \"2022-08-31T23:59:59.999Z\",\r\n  \"isActive\": true\r\n}"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Cache-Control",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "no-cache"
+          },
+          {
+            "name": "Postman-Token",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "Host",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "PostmanRuntime/7.39.1"
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "*/*"
+          },
+          {
+            "name": "Accept-Encoding",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "gzip, deflate, br"
+          },
+          {
+            "name": "Connection",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "keep-alive"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "application/json"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/discount/check": {
+      "post": {
+        "tags": [
+          "discounts"
+        ],
+        "summary": "check_discount",
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": "{\r\n  \"discountCode\": \"SUMMER20\"\r\n}"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Cache-Control",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "no-cache"
+          },
+          {
+            "name": "Postman-Token",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "Host",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "PostmanRuntime/7.39.1"
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "*/*"
+          },
+          {
+            "name": "Accept-Encoding",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "gzip, deflate, br"
+          },
+          {
+            "name": "Connection",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "keep-alive"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "application/json"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/discount/67c24d64e996241a9938632b": {
+      "patch": {
+        "tags": [
+          "discounts"
+        ],
+        "summary": "update_discount",
+        "requestBody": {
+          "content": {
+            "text/plain": {
+              "schema": {
+                "type": "string",
+                "example": "{\r\n  \"discountCode\": \"SUMMER20\",\r\n  \"discountPercentage\": 20,\r\n  \"validFrom\": \"2022-06-01T00:00:00.000Z\",\r\n  \"validTo\": \"2025-08-31T23:59:59.999Z\",\r\n  \"isActive\": \"true\"\r\n}"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Cache-Control",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "no-cache"
+          },
+          {
+            "name": "Postman-Token",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "Host",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "<calculated when request is sent>"
+          },
+          {
+            "name": "User-Agent",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "PostmanRuntime/7.39.1"
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "*/*"
+          },
+          {
+            "name": "Accept-Encoding",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "gzip, deflate, br"
+          },
+          {
+            "name": "Connection",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "keep-alive"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "application/json"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "discounts"
+        ],
+        "summary": "delete_discount",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "discounts"
+        ],
+        "summary": "get_discount",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/discounts": {
+      "get": {
+        "tags": [
+          "discounts"
+        ],
+        "summary": "get_all_discounts",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    }
+  }
+}
