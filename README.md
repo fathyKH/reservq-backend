@@ -37,6 +37,7 @@ This Express-based API server for a restaurant provides routes for managing prod
    ```
 4. Start the server:
    ```sh
+   npm run build
    npm start
    ```
 ## API Documentation
@@ -51,5 +52,5 @@ This project is licensed under the MIT License.
 
 ---
 ### Author
-Developed by **Your Name**.
+Developed by **fathyKH**.
 
