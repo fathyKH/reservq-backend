@@ -46,7 +46,7 @@ export const loginUser = async (req : AuthRequest, res : Response) : Promise<voi
             { id: user._id, email: user.email, role: user.isAdmin ? "admin" : "user" },
             jwtSecret,
             { expiresIn: '24h' });
-        res.status(200).json({token: token});
+        res.status(200).json({token: token, role: user.isAdmin ? "admin" : "user"});
  
         
     } catch (error) {
