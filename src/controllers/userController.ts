@@ -21,7 +21,6 @@ export const registerUser = async (req: AuthRequest, res: Response): Promise<voi
         await user.save();
         res.status(201).json('user created successfully');
     } catch (error) {
-        console.log(error);
         res.status(400).json({ message: "Error creating user" });
     }
 }
@@ -50,11 +49,11 @@ export const loginUser = async (req : AuthRequest, res : Response) : Promise<voi
  
         
     } catch (error) {
-        res.status(500).json({ message: "Server error" });
+        res.status(500).json({ message: "unable to login" });
     }
 }
 
-export const resetPassword = async (req : AuthRequest, res : Response) : Promise<void> => {
+export const changePassword = async (req : AuthRequest, res : Response) : Promise<void> => {
     try {
         if (!req.user) {
             res.status(401).json({ message: "you aren't authorized" });
@@ -65,12 +64,12 @@ export const resetPassword = async (req : AuthRequest, res : Response) : Promise
             res.status(400).json({ message: "Password is required" });
             return
         }
-        const hash = bcrypt.hash(password, 10);
+        const hash = (await bcrypt.hash(password, 10)).toString();
         await User.updateOne({ _id: req.user.id }, { $set: { password: hash } });
         res.status(200).json({ message: "Password updated successfully" });
 
     } catch (error) {
-        res.status(500).json({ message: "Server error" });
+        res.status(500).json({ message: "unable to update password" });
         
     }
 }
