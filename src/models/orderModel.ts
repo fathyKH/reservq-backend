@@ -29,15 +29,27 @@ const ProductSchema: Schema = new Schema<Product>({
     { _id: false }
 );
 
-const OrderSchema: Schema = new Schema<IOrder>({
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Reference to User
-    products: { type: [ProductSchema], required: true },
-    total: { type: Number, required: true },
-    date: { type: Date, required: true },
-    status: { type: String, default: 'pending' },
-    paymentMethod: { type: String, required: true },
-    paymentStatus: { type: String, default: 'pending' },
-    address: { type: String, required: true },
-});
+const OrderSchema: Schema = new Schema<IOrder>(
+    {
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Reference to User
+      products: { type: [ProductSchema], required: true }, // Embedded ProductSchema
+      total: { type: Number, required: true },
+      date: { type: Date, required: true },
+      status: { type: String, default: "pending" },
+      paymentMethod: { type: String, required: true },
+      paymentStatus: { type: String, default: "pending" },
+      address: { type: String, required: true },
+    },
+    {
+      toJSON: {
+        transform: (_doc, ret) => {
+          ret.id = ret._id.toString(); // Convert _id to id
+          delete ret._id; // Remove _id
+          delete ret.__v; // Remove __v (Mongoose version key)
+          return ret;
+        },
+      },
+    }
+  );
 
 export default mongoose.model<IOrder>('Order', OrderSchema);
