@@ -18,7 +18,7 @@ export const getBlogById = async (req: AuthRequest, res: Response): Promise<void
 
 export const getAllBlogs = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-        const blogs = await blogSchema.find().select({ content: 0, image: 0 });;
+        const blogs = await blogSchema.find().select({ content: 0 });;
         res.status(200).json(blogs);
     } catch (error) {
         res.status(500).json({ message: "error getting blogs" });
