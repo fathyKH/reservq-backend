@@ -4,7 +4,7 @@ import cors from "cors";
 import connectDB from "./config/dbConnection";
 import productRoute from "./routes/productRoute";
 import blogRoute from "./routes/blogRoute";
-import userRoute from "./routes/userRoute";
+import authRoute from "./routes/authRoute";
 import orderRoute from "./routes/orderRoute";
 import authMiddleware from "./middlewares/authMiddleware";
 import salesRoute from "./routes/salesRoute";
@@ -28,7 +28,7 @@ app.use("/api/v1", authMiddleware);
 
 app.use("/api/v1", productRoute);
 app.use("/api/v1", blogRoute);
-app.use("/api/v1", userRoute);
+app.use("/api/v1", authRoute);
 app.use('/api/v1', orderRoute);
 app.use('/api/v1', discountRoute);
 app.use('/api/v1', categoryRoute);
