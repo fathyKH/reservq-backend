@@ -11,6 +11,9 @@ import salesRoute from "./routes/salesRoute";
 import categoryRoute from "./routes/categoryRoute";
 import discountRoute from "./routes/discountRoute";
 import scheduleUpdateMaterializedView from "./jobs/updateMaterializedView";
+import customerRoute from "./routes/customerRoute";
+import profileRoute from "./routes/profileRoute";
+
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument  from '../openapi.json';
 
@@ -25,7 +28,8 @@ app.use(cors());
 scheduleUpdateMaterializedView();
 
 app.use("/api/v1", authMiddleware);
-
+app.use("/api/v1", customerRoute);
+app.use("/api/v1", profileRoute);
 app.use("/api/v1", productRoute);
 app.use("/api/v1", blogRoute);
 app.use("/api/v1", authRoute);

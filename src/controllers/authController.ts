@@ -1,28 +1,49 @@
 import { Request, Response } from "express";
 import User from "../models/authModel";
+import Customer from "../models/customerModel";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import sgMail from "../config/sendgrid";
 import { MailDataRequired } from "@sendgrid/mail";
-import { AuthRequest, CustomJwtPayload } from "../middlewares/authMiddleware";
+import { AuthRequest } from "../middlewares/authMiddleware";
+import mongoose from "mongoose";
 export const registerUser = async (req: AuthRequest, res: Response): Promise<void> => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
         if (req.user) {
             res.status(401).json({ message: "You are already logged in" });
             return
         }
+
+        const {firstName, lastName, email, password} = req.body ;
+        if(!firstName || !lastName || !email || !password){
+            res.status(400).json({message:"All fields are required"})
+            return
+        }
+
         const existingUser=await User.findOne({email:req.body.email})
         if(existingUser){
             res.status(400).json({message:"User already exists"})
             return 
         }
-        const {firstName, lastName, email, password} = req.body ;
-        console.log(password);
+        // create user record 
         const hash = await bcrypt.hash(password, 10);
         const user = new User({firstName, lastName, email, password:hash});
-        await user.save();
+        await user.save({session});
+
+        // create customer record
+        const customer = new Customer({userId:user._id, firstName:user.firstName, lastName:user.lastName, email:user.email});
+        await customer.save({session});
+        
+        //commit transaction
+        await session.commitTransaction();
+        
         res.status(201).json('user created successfully');
     } catch (error) {
+        //rollback transaction
+        await session.abortTransaction();
+        session.endSession();
         res.status(400).json({ message: "Error creating user" });
     }
 }
