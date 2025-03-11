@@ -116,7 +116,7 @@ export const verifyResetToken = (req: AuthRequest, res: Response) : Promise<void
         res.status(401).json({ message: "you already logged in" });
         return
     }
-    const { token } = req.query;
+    const { token } = req.body;
   
     if (!token) {
        res.status(400).json({ valid: false, message: "Token is missing" });
@@ -128,8 +128,19 @@ export const verifyResetToken = (req: AuthRequest, res: Response) : Promise<void
         res.json({ valid: true });
         return
     } catch (error) {
-       res.status(400).json({ valid: false, message: "Invalid or expired token" });
-       return
+        if (error instanceof jwt.TokenExpiredError) {
+            res.status(400).json({ message: "Invalid or expired token" });
+            return
+        }
+        else if (error instanceof jwt.JsonWebTokenError) {
+            res.status(400).json({ message: "Invalid or expired token" });
+            return
+        }
+        else {
+            res.status(400).json({ message: "Invalid or expired token" });
+            console.log(error.message);
+            return
+        }
     }
   };
 
