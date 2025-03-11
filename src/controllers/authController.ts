@@ -3,6 +3,7 @@ import User from "../models/authModel";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import sgMail from "../config/sendgrid";
+import { MailDataRequired } from "@sendgrid/mail";
 import { AuthRequest, CustomJwtPayload } from "../middlewares/authMiddleware";
 export const registerUser = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
@@ -92,12 +93,15 @@ export const forgetPassword = async (req : AuthRequest, res : Response) : Promis
             const token = jwt.sign({ id: user._id }, jwtSecret, { expiresIn: '1h' });
             const link = `${process.env.DOMAIN}/reset-password?token=${token}`;
             // send email to user
-            sgMail.send({
+            const msg: MailDataRequired = {
                 to: email,
-                from: process.env.SENDGRID_EMAIL,
-                subject: 'Password Reset',
-                text: `Click on this link to reset your password: ${link}`,
-            });
+                from: process.env.SENDGRID_EMAIL as string,
+                templateId: process.env.PASSWORD_RESET_TEMPLATE_ID as string,
+                dynamic_template_data: {
+                  reset_url: link,
+                },
+              } as MailDataRequired; // Type assertion to avoid TypeScript error
+            await sgMail.send(msg);            
 
         }
         res.status(200).json({ message: "Password reset link sent to your email" });
