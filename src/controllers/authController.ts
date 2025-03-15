@@ -57,11 +57,13 @@ export const loginUser = async (req : AuthRequest, res : Response) : Promise<voi
         const user = await User.findOne({ email: req.body.email });
 
         if (!user) {
-            throw new Error('User not found');
+            res.status(404).json({ message: "Invalid email or password" });
+            return
         }
         const isValidPassword = await bcrypt.compare(req.body.password, user.password);
         if (!isValidPassword) {
-            throw new Error('Invalid password');
+            res.status(404).json({ message: "Invalid email or password" });
+            return
         }
         const jwtSecret = process.env.JWT_SECRET_KEY as string;
         const token = jwt.sign(
