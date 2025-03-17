@@ -25,7 +25,7 @@ const MaterializedOverallStatsSchema = new Schema<IMaterialized>(
 const addToJsonTransform = (schema: Schema) => {
   schema.set("toJSON", {
     transform: (_doc, ret) => {
-      ret.id = ret._id.toString(); // Convert _id to id
+      ret.id = ret._id; // Convert _id to id
       delete ret._id; // Remove _id
       delete ret.__v; // Remove Mongoose version key
       return ret;
