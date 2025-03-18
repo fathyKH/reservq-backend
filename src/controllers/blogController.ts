@@ -33,7 +33,7 @@ export const createBlog = async (req: AuthRequest, res: Response): Promise<void>
         }
         const blog = new blogSchema(req.body);
         await blog.save();
-        res.status(201).json({message:"blog created successfully"});
+        res.status(201).json(blog);
     } catch (error) {
         res.status(400).json({ message: "Error creating blog" });
     }
@@ -47,7 +47,7 @@ export const updateBlog = async (req: AuthRequest, res: Response): Promise<void>
         }
         const blog = await blogSchema.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (blog) {
-            res.status(200).json({message:"Blog updated successfully"});
+            res.status(200).json({blog});
         } else {
             res.status(404).json({ message: "Blog not found" });
         }

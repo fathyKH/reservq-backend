@@ -51,7 +51,7 @@ const ProductSchema: Schema = new Schema<IProduct>(
   {
     name: { type: String, required: true },
     price: { type: Number, required: true },
-    rating: { type: Number, required: true },
+    rating: { type: Number, default: 0 },
     size: { type: String, required: true },
     addon: { type: String, required: true },
     quantity: { type: Number, required: true },

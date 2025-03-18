@@ -64,7 +64,7 @@ export const createDiscount = async (req: AuthRequest, res: Response): Promise<v
             return;
           }
         const discount = await Discount.create(req.body);
-        res.status(201).json({message:"Discount created successfully"});
+        res.status(201).json({discount});
     } catch (error) {
         res.status(500).json({ message: "error in creating discount" });
     }
@@ -91,7 +91,7 @@ export const updateDiscount = async (req: AuthRequest, res: Response): Promise<v
         
         const discount = await Discount.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (discount) {
-            res.status(200).json({message:"Discount updated successfully"});
+            res.status(200).json({discount});
         } else {
             res.status(404).json({ message: "Discount not found" });
         }

@@ -31,7 +31,7 @@ export const createCategory = async (req: AuthRequest, res: Response): Promise<v
         }
         const category = new Category(req.body);
         await category.save();
-        res.status(201).json({message:"Category created successfully"});
+        res.status(201).json({category});
     } catch (error) {
         res.status(400).json({ message: "Error creating category" });
     }
@@ -45,7 +45,7 @@ export const updateCategory = async (req: AuthRequest, res: Response): Promise<v
         }
         const category = await Category.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (category) {
-            res.status(200).json({message:"Category updated successfully"});
+            res.status(200).json({category});
         } else {
             res.status(404).json({ message: "Category not found" });
         }
