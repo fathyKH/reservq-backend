@@ -3,10 +3,10 @@ import { AuthRequest } from "../middlewares/authMiddleware";
 import Customer from "../models/customerModel";
 
 export const getAllCustomers = async (req: AuthRequest, res: Response) => {
-    if (!req.user || req.user.role !== "admin") {
-        res.status(401).json({ message: "You are not authorized to view this resource" });
-        return
-    }
+    //if (!req.user || req.user.role !== "admin") {
+    //    res.status(401).json({ message: "You are not authorized to view this resource" });
+    //    return
+    //}
 
     try {
         const customers = await Customer.find().select('-userId');
