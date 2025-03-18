@@ -58,6 +58,11 @@ export const createDiscount = async (req: AuthRequest, res: Response): Promise<v
             res.status(401).json({ message: "You are not authorized to create a discount" });
             return;
         }
+        const { validFrom, validTo } = req.body;
+        if (validFrom >= validTo) {
+            res.status(400).json({ message: "Valid from date must be before valid to date" });
+            return;
+          }
         const discount = await Discount.create(req.body);
         res.status(201).json({message:"Discount created successfully"});
     } catch (error) {
@@ -67,10 +72,23 @@ export const createDiscount = async (req: AuthRequest, res: Response): Promise<v
 
 export const updateDiscount = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-        if (!req.user || req.user.role !== "admin" ) {
-            res.status(401).json({ message: "You are not authorized to update this discount" });
-            return;
+        interface RequestBody {
+            discountCode?: string;
+            isActive?: boolean;
+            validFrom?: Date;
+            validTo?: Date;
+          }
+          
+          const updateData: RequestBody = {};
+          if (req.body.discountCode) updateData.discountCode = req.body.discountCode;
+          if (req.body.isActive !== undefined) updateData.isActive = req.body.isActive;
+          if (req.body.validFrom) updateData.validFrom = req.body.validFrom;
+          if (req.body.validTo) updateData.validTo = req.body.validTo;
+        if (updateData.validFrom && updateData.validTo && updateData.validFrom >= updateData.validTo) {
+          res.status(400).json({ message: "Valid from date must be before valid to date" });
+          return;
         }
+        
         const discount = await Discount.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (discount) {
             res.status(200).json({message:"Discount updated successfully"});
