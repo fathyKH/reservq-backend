@@ -80,6 +80,11 @@ export const updateProduct = async (req: AuthRequest, res: Response): Promise<vo
     if (images) {
       updatedData.images = images.map(image => Array.isArray(image) ? image : [image]).flat();
     }
+
+    if (Object.keys(updatedData).length === 0) {
+      res.status(400).json({ message: "No fields to update" });
+      return
+    }
     const product = await Product.findByIdAndUpdate(req.params.id, updatedData, { new: true });
     if (product) {
       res.status(200).json(product);

@@ -31,7 +31,16 @@ export const createBlog = async (req: AuthRequest, res: Response): Promise<void>
             res.status(401).json({ message: "You are not authorized to create a blog" });
             return 
         }
-        const blog = new blogSchema(req.body);
+        const { title, content, excerpt, category } = req.body;
+
+        const image = req.file ? (req.file as Express.MulterS3.File).location : undefined;
+
+        if (!title || !content || !excerpt || !category || !image) {
+            res.status(400).json({ message: "All fields are required" });
+            return
+        }
+        const createdData = { title, content, excerpt, category, image };
+        const blog = new blogSchema(createdData);
         await blog.save();
         res.status(201).json(blog);
     } catch (error) {
@@ -45,7 +54,21 @@ export const updateBlog = async (req: AuthRequest, res: Response): Promise<void>
             res.status(401).json({ message: "You are not authorized to update this blog" });
             return 
         }
-        const blog = await blogSchema.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const { title, content, excerpt, category } = req.body;
+        const image = req.file ? (req.file as Express.MulterS3.File).location : undefined;
+        const updatedData: Partial<{ title: string; content: string; excerpt: string; category: string, image: string }> = {};
+
+        if (title) updatedData.title = title;
+        if (content) updatedData.content = content;
+        if (excerpt) updatedData.excerpt = excerpt;
+        if (category) updatedData.category = category;
+        if (image) updatedData.image = image;
+
+        if (Object.keys(updatedData).length === 0) {
+            res.status(400).json({ message: "At least one field is required to update the blog" });
+            return;
+        }
+        const blog = await blogSchema.findByIdAndUpdate(req.params.id, updatedData, { new: true });
         if (blog) {
             res.status(200).json(blog);
         } else {

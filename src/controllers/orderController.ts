@@ -41,6 +41,20 @@ export const getAllOrders = async (req: AuthRequest, res: Response): Promise<voi
         res.status(500).json({ message: "Server error" });
     }
 };
+
+export const getAllUserOrders = async (req: AuthRequest, res: Response): Promise<void> => {
+    if (!req.user) {
+        res.status(401).json({ message: "You are not authorized to view your orders" });
+        return;
+    }
+    try {
+        const orders = await Order.find({ userId: req.user.id });
+        res.status(200).json(orders);
+        return
+    } catch (error) {
+        res.status(500).json({ message: "error getting user orders" });
+}
+};
 export const createOrder = async (req: AuthRequest, res: Response): Promise<void> => {
     const session = await mongoose.startSession();
     session.startTransaction();
