@@ -47,7 +47,7 @@ export const updateBlog = async (req: AuthRequest, res: Response): Promise<void>
         }
         const blog = await blogSchema.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (blog) {
-            res.status(200).json({blog});
+            res.status(200).json(blog);
         } else {
             res.status(404).json({ message: "Blog not found" });
         }

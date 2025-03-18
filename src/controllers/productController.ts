@@ -46,7 +46,7 @@ export const createProduct = async (req: AuthRequest, res: Response): Promise<vo
     }
     const product = new Product(req.body);
     await product.save();
-    res.status(201).json({product});
+    res.status(201).json(product);
   } catch (error) {
     res.status(400).json({ message: "Error creating product" });
   }
@@ -82,7 +82,7 @@ export const updateProduct = async (req: AuthRequest, res: Response): Promise<vo
     }
     const product = await Product.findByIdAndUpdate(req.params.id, updatedData, { new: true });
     if (product) {
-      res.status(200).json({product});
+      res.status(200).json(product);
     } else {
       res.status(404).json({ message: "Product not found" });
     }
