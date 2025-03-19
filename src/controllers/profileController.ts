@@ -62,7 +62,7 @@ export const updateProfile = async (req: AuthRequest, res: Response) : Promise<v
         return
 
     } catch (error) {
-        res.status(500).json({ message: "Error updating your data" });
+        res.status(500).json({ message: error.message });
         return
     }
 };

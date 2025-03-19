@@ -31,15 +31,14 @@ export const createBlog = async (req: AuthRequest, res: Response): Promise<void>
             res.status(401).json({ message: "You are not authorized to create a blog" });
             return 
         }
-        const { title, content, excerpt, category } = req.body;
-
+        const { title, content, excerpt, category, readTime} = req.body;
+        
         const image = req.file ? (req.file as Express.MulterS3.File).location : undefined;
-
-        if (!title || !content || !excerpt || !category || !image) {
+        if (!title || !content || !excerpt || !category || !image|| !readTime) {
             res.status(400).json({ message: "All fields are required" });
             return
         }
-        const createdData = { title, content, excerpt, category, image };
+        const createdData = { title, content, excerpt, category, image, readTime };
         const blog = new blogSchema(createdData);
         await blog.save();
         res.status(201).json(blog);
