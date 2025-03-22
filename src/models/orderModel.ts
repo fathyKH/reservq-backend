@@ -17,6 +17,7 @@ interface IOrder extends Document {
     paymentMethod: string;
     paymentStatus: string;
     address: string;
+    deliveryType: string;
 }
 
 const ProductSchema: Schema = new Schema<Product>({
@@ -39,6 +40,7 @@ const OrderSchema: Schema = new Schema<IOrder>(
       paymentMethod: { type: String, required: true },
       paymentStatus: { type: String, default: "pending" },
       address: { type: String, required: true },
+      deliveryType: { type: String, enum: ["delivery", "pickup","in-restaurant"], required: true },
     },
     {
       toJSON: {

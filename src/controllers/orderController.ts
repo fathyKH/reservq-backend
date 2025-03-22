@@ -63,9 +63,9 @@ export const createOrder = async (req: AuthRequest, res: Response): Promise<void
         res.status(401).json({ message: "You are not authorized to create an order" });
         return;
       }
-      const { products,discountCode, paymentMethod, address } = req.body;
+      const { products,discountCode, paymentMethod, address, deliveryType } = req.body;
       console.log(req.body);
-      if (!products || !paymentMethod || !address) {
+      if (!products || !paymentMethod || !address || !deliveryType) {
         res.status(400).json({ message: "Missing required fields" });
         return;
       }
@@ -133,6 +133,7 @@ export const createOrder = async (req: AuthRequest, res: Response): Promise<void
         total,
         date: new Date().toISOString(),
         paymentMethod,
+        deliveryType,
         address
       });
       
