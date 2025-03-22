@@ -89,7 +89,7 @@ export const updateDiscount = async (req: AuthRequest, res: Response): Promise<v
           return;
         }
         
-        const discount = await Discount.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const discount = await Discount.findByIdAndUpdate(req.params.id, updateData, { new: true });
         if (discount) {
             res.status(200).json(discount);
         } else {
