@@ -24,13 +24,14 @@ export const createComment = async (req: AuthRequest, res: Response) : Promise<v
     }
 
     try {
-        const newComment = await Comment.create({
+        const newComment = new Comment({
             comment,
             userId: userId,
             blogId,
             reply: Array.isArray(reply) ? reply : [] // Handle reply here
 
         });
+        await newComment.save();
         res.status(201).json(newComment);
         return
     } catch (error) {
@@ -91,6 +92,13 @@ export const editComment = async (req: AuthRequest, res: Response) : Promise<voi
         res.status(401).json({ message: "you are unauthorized to edit a comment" });
         return
     }
+    
+    const {comment} = req.body;
+    if (!comment){
+        res.status(400).json({ message: "comment field is required"})
+        return
+    }
+
     try {
         const comment = await Comment.findById(req.params.id);
         if (!comment) {

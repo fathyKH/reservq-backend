@@ -14,6 +14,7 @@ import scheduleUpdateMaterializedView from "./jobs/updateMaterializedView";
 import customerRoute from "./routes/customerRoute";
 import profileRoute from "./routes/profileRoute";
 import commentRoute from "./routes/commentRoute";
+import reviewRoute from "./routes/reviewRoute";
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument  from '../openapi.json';
 
@@ -28,6 +29,7 @@ app.use(cors());
 scheduleUpdateMaterializedView();
 
 app.use("/api/v1", authMiddleware);
+app.use("/api/v1", reviewRoute);
 app.use("/api/v1", customerRoute);
 app.use("/api/v1", commentRoute);
 app.use("/api/v1", profileRoute);
