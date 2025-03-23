@@ -1,7 +1,8 @@
 import { Response } from "express";
 import { AuthRequest } from "src/middlewares/authMiddleware";
 import Comment from "../models/commentModel";
-
+import Blog from "../models/blogModel";
+import mongoose from "mongoose";
 
 export const createComment = async (req: AuthRequest, res: Response) : Promise<void> => {
     if (!req.user) {
@@ -9,10 +10,16 @@ export const createComment = async (req: AuthRequest, res: Response) : Promise<v
         return
     }
     const { comment, blogId , reply } = req.body;
-    const userId = req.user?.id;
+    const userId = req.user.id;
 
     if (!comment || !blogId || !userId) {
         res.status(400).json({ message: "Missing required fields" });
+        return
+    }
+
+    const blog = await Blog.findById(blogId);
+    if (!blog) {
+        res.status(404).json({ message: "Blog not found" });
         return
     }
 
@@ -34,7 +41,43 @@ export const createComment = async (req: AuthRequest, res: Response) : Promise<v
 
 export const getComments = async (req: AuthRequest, res: Response) => {
     try {
-        const comments = await Comment.find({ blogId: req.params.id });
+       
+        const comments = await Comment.aggregate([
+            { $match: { blogId: new mongoose.Types.ObjectId(req.params.id) } },
+            {
+              $lookup: {
+                from: "users", // Ensure this matches your actual User collection name
+                localField: "userId",
+                foreignField: "_id",
+                as: "userDetails",
+              },
+            },
+            { $unwind: "$userDetails" }, // Flatten the array
+            
+            {
+              $lookup: {
+                from: "customers", // Ensure this matches your actual Customer collection name
+                localField: "userDetails._id", // Linking user with customer
+                foreignField: "userId", // Customer stores userId
+                as: "customerDetails",
+              },
+            },
+            { $unwind: "$customerDetails" }, // Flatten customer details
+            
+            {
+              $project: {
+                id: "$_id", // Rename _id to id
+                _id: 0,                  comment: 1,
+                blogId: 1,
+                date: 1,
+                "customerDetails.firstName": 1,
+                "customerDetails.lastName": 1,
+                "customerDetails.profileImage": 1,
+              },
+            },
+            { $sort: { date: -1 } }, // Sort by newest comments first
+          ]);
+          
         res.status(200).json(comments);
         return
     } catch (error) {
