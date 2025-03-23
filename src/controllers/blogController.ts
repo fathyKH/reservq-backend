@@ -18,13 +18,16 @@ export const getBlogById = async (req: AuthRequest, res: Response): Promise<void
 
 export const getAllBlogs = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-        if ( req.user.role === "admin") {
+        console.log(req.user)
+        if (req.user) {
+            if (req.user.role === "admin") {
             const blogs = await blogSchema.find();
             res.status(200).json(blogs);
             return
+            }
         }
         else {
-            const blogs = await blogSchema.find().select({ content: 0 });;
+            const blogs = await blogSchema.find().select({ content: 0 });
             res.status(200).json(blogs);
         }
     } catch (error) {
