@@ -30,25 +30,55 @@ export const getProduct = async (req: AuthRequest, res: Response): Promise<void>
 
 export const createProduct = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
+    // Check if user is admin
     if (!req.user || req.user.role !== "admin") {
       res.status(401).json({ message: "You are not authorized to create a product" });
-      return
+      return;
     }
-    const {name,price,quantity,category,size,addon,discount,ingredients,meal_contents,videoUrl} = req.body;
-    const images = req.files ? 
-      Array.isArray(req.files) ? 
-      req.files.map((file: Express.MulterS3.File) => file.location) : 
-      Object.values(req.files).map((files: Express.MulterS3.File[]) => files.map((file: Express.MulterS3.File) => file.location)) 
-    : undefined;
-    if (!name || !price || !quantity || !category || !size || !addon || !discount || !ingredients || !meal_contents || !videoUrl || !images) {
-      res.status(400).json({ message: "All fields are required" });
-      return
+
+    // Destructure fields from request body
+    const { name, price, quantity, category, size, addon, discount, videoUrl } = req.body;
+    console.log('before')
+    // Parse ingredients & meal_contents (in case they are sent as JSON strings)
+    const ingredients = typeof req.body.ingredients === "string" ? JSON.parse(req.body.ingredients) : req.body.ingredients;
+    const meal_contents = typeof req.body.meal_contents === "string" ? JSON.parse(req.body.meal_contents) : req.body.meal_contents;
+    console.log('after')
+    // Process uploaded images from S3 (multer-s3)
+    const images = req.files
+      ? Array.isArray(req.files)
+        ? req.files.map((file: Express.MulterS3.File) => file.location)
+        : Object.values(req.files).flat().map((file: Express.MulterS3.File) => file.location)
+      : [];
+      console.log(name,price,quantity,category,size,addon,discount,ingredients,meal_contents,videoUrl)
+      console.log(images)
+
+    // Validate required fields
+    if (!name || !price || !quantity || !category || !size || !addon || !ingredients || !meal_contents || !videoUrl || images.length === 0) {
+      res.status(400).json({ message: "All fields are required, including at least one image" });
+      return;
     }
-    const product = new Product(req.body);
+    // Create new product
+    const product = new Product({
+      name,
+      price,
+      quantity,
+      category,
+      size,
+      addon,
+      discount,
+      ingredients,
+      meal_contents,
+      videoUrl,
+      images,
+    });
+
+    // Save to DB
     await product.save();
+
     res.status(201).json(product);
   } catch (error) {
-    res.status(400).json({ message: "Error creating product" });
+    console.error("Error creating product:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

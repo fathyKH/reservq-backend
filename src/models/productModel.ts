@@ -1,13 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-interface IReview {
-  user: string;
-  userImage: string;
-  rating: number;
-  comment: string;
-  time: string;
-}
-
 interface IMealContent {
   item: string;
   quantity: number;
@@ -25,18 +17,10 @@ export interface IProduct extends Document {
   category: mongoose.Types.ObjectId;
   ingredients: string[];
   meal_contents: IMealContent[];
-  reviews: IReview[];
   videoUrl: string;
   status: "available" | "out of stock";
 }
 
-const ReviewSchema: Schema = new Schema<IReview>({
-  user: { type: String, required: true },
-  userImage: { type: String, required: true },
-  rating: { type: Number, required: true },
-  comment: { type: String, required: true },
-  time: { type: String, required: true }
-});
 
 const MealContentSchema: Schema = new Schema<IMealContent>({
   item: { type: String, required: true },
@@ -60,7 +44,6 @@ const ProductSchema: Schema = new Schema<IProduct>(
     images: { type: [String], required: true },
     ingredients: { type: [String], required: true },
     meal_contents: { type: [MealContentSchema], required: true },
-    reviews: { type: [ReviewSchema], default: [] },
     videoUrl: { type: String, required: true },
     status: { type: String, default: "available" },
   },
