@@ -23,3 +23,8 @@ export class ApplicationError extends Error {
     }
   }
   
+  export class PaypalApiError extends ApplicationError {
+    constructor(message: string) {
+      super(message, 500); // 500: Internal Server Error
+    }
+  }

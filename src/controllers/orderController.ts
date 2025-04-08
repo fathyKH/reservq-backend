@@ -1,10 +1,107 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import Order from "../models/orderModel";
 import { AuthRequest } from "../middlewares/authMiddleware";
-import { InsufficientQuantityError, ProductNotFoundError, ApplicationError } from "../utils/Exceptions";
+import { InsufficientQuantityError, ProductNotFoundError, ApplicationError, PaypalApiError } from "../utils/Exceptions";
 import Product from "../models/productModel";
 import Discount from "../models/discountModel";
+import paypal from "../config/paypal";
 import mongoose from "mongoose";
+import {
+  OrdersController,
+  PaymentsController,
+  PaypalExperienceLandingPage,
+  PaypalExperienceUserAction,
+  PayeePaymentMethodPreference,
+  ShippingPreference,
+  CheckoutPaymentIntent,
+  ApiError
+} from "@paypal/paypal-server-sdk";
+
+interface OrderItem {
+  productId: mongoose.Types.ObjectId;
+  name: string;
+  price: number;
+  discount?: number;
+  quantity: number;
+}
+
+const paypalOrderCheckout = new OrdersController(paypal);
+const createPaypalOrder = async (orderItems: OrderItem[],itemTotal: number,shippingFee: number) => {
+    try{
+          const {body,...httpResponse} = await paypalOrderCheckout.createOrder({
+              body : {
+                intent: CheckoutPaymentIntent.Capture,
+                paymentSource: {
+                  paypal: {
+                    experienceContext: {
+                      paymentMethodPreference: PayeePaymentMethodPreference.ImmediatePaymentRequired,
+                      landingPage: PaypalExperienceLandingPage.Login,
+                      userAction: PaypalExperienceUserAction.PayNow,
+                      returnUrl: "http://localhost:3000/payment-capture",
+                      cancelUrl: "http://localhost:3000/payment-cancel"
+                      }
+                    }
+                 },
+                purchaseUnits: [{
+                  amount: {
+                      value: (itemTotal+shippingFee).toFixed(2).toString(),
+                      currencyCode: "USD",
+                      breakdown: {
+                          itemTotal: {
+                              value: itemTotal.toString(),
+                              currencyCode: "USD"
+                          },
+                          shipping: {
+                              value: shippingFee.toString(),
+                              currencyCode: "USD"
+                          }
+                      }
+                  },
+                   items:  orderItems.map(item => ({
+                      name: item.name,
+                      description: item.name,
+                      quantity: item.quantity.toString(),
+                      unitAmount: {
+                          value: ((item.price*(1-item.discount/100))).toString(),
+                          currencyCode: "USD"
+                      },
+                      sku: item.productId.toString()
+                  })) 
+                }]
+              },
+              prefer: "return=minimal",
+          });
+          return httpResponse.result;
+    }catch (error) {
+        throw new PaypalApiError(error.message);
+    }
+}  
+
+const CapturePaypalOrder = async (paymentId: string) => {
+    try{
+          const {body,...httpResponse} = await paypalOrderCheckout.captureOrder({
+              id : paymentId,
+              prefer: "return=minimal"
+          });
+          return httpResponse.result;
+    }catch (error) {
+        console.log("error is : ",error)  
+        throw new PaypalApiError(error.message);
+      
+    }
+}
+
+export const captureOrder = async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+        const { paymentId } = req.body;
+        const captureOrder = await CapturePaypalOrder(paymentId as string);
+        res.status(200).json(captureOrder);
+        return
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+        return
+    }
+}
 export const getOrder = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
         // Find the order by ID from the request parameters
@@ -56,6 +153,7 @@ export const getAllUserOrders = async (req: AuthRequest, res: Response): Promise
 }
 };
 export const createOrder = async (req: AuthRequest, res: Response): Promise<void> => {
+  
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
@@ -64,21 +162,25 @@ export const createOrder = async (req: AuthRequest, res: Response): Promise<void
         return;
       }
       const { products,discountCode, paymentMethod, address, deliveryType } = req.body;
-      console.log(req.body);
       if (!products || !paymentMethod || !address || !deliveryType) {
         res.status(400).json({ message: "Missing required fields" });
         return;
       }
+      if (deliveryType !== "delivery" && deliveryType !== "pickup" && deliveryType !== "in-restaurant") {
+        res.status(400).json({ message: "Invalid delivery type" });
+        return;
+      }
+
+      let itemTotal = 0
+      let shippingFee = 0
       
-      let total = 0;
+      if (deliveryType === "delivery" ) {
+        shippingFee += 3; // delivery fee
+      }
+      
       // Build a snapshot of ordered products for the order document
-      const orderProducts: {
-        productId: mongoose.Types.ObjectId;
-        name: string;
-        price: number;
-        discount?: number;
-        quantity: number;
-      }[] = [];
+      const orderProducts: OrderItem[] = [];
+
       
       for (let item of products) {
         // Find the product using the productId provided in the snapshot request
@@ -90,7 +192,7 @@ export const createOrder = async (req: AuthRequest, res: Response): Promise<void
           throw new InsufficientQuantityError(`Insufficient quantity for product ${product.name}`);
         }
         
-        total += (product.price*(1-product.discount/100)) * item.quantity;
+        itemTotal += (product.price*(1-product.discount/100)) * item.quantity;
         // Deduct the ordered quantity from product inventory
         product.quantity -= item.quantity;
 
@@ -109,8 +211,8 @@ export const createOrder = async (req: AuthRequest, res: Response): Promise<void
           quantity: item.quantity
         });
       }
-        let discountAmount = 0;
-        if (discountCode) {
+      let discountAmount = 0;
+      if (discountCode) {
         const discount = await Discount.findOne({ code: discountCode, active: true });
         if (!discount) {
             throw new ApplicationError("Invalid discount code", 400);
@@ -119,13 +221,19 @@ export const createOrder = async (req: AuthRequest, res: Response): Promise<void
         if (now < discount.validFrom || now > discount.validTo) {
             throw new ApplicationError("Discount code expired or not yet active", 400);
         }
-        discountAmount = (total * discount.discountPercentage) / 100;
+        discountAmount = (itemTotal * discount.discountPercentage) / 100;
         }
 
         // Adjust total based on discount amount
-        total = total - discountAmount;
-        if (total < 0) total = 0; // Ensure total is not negative
-
+      let total = (shippingFee+itemTotal) - discountAmount;
+      if (total < 0) total = 0; // Ensure total is not negative
+     
+      // paymment using paypal
+      if (paymentMethod === "paypal") {
+        const paypalOrder = await createPaypalOrder(orderProducts,itemTotal,shippingFee);
+        res.status(200).json(paypalOrder);
+        return;
+      }
       // Create the order document using the product snapshots
       const order = new Order({
         userId: req.user.id,
@@ -142,8 +250,7 @@ export const createOrder = async (req: AuthRequest, res: Response): Promise<void
       // Commit the transaction
       await session.commitTransaction();
       session.endSession();
-      
-      res.status(201).json({ message: 'Order created successfully' });
+
     } catch (error: any) {
       // Abort transaction to rollback any changes made to product quantities
       await session.abortTransaction();
