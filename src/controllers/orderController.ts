@@ -26,7 +26,7 @@ interface OrderItem {
 }
 
 const paypalOrderCheckout = new OrdersController(paypal);
-const createPaypalOrder = async (orderItems: OrderItem[],itemTotal: number,shippingFee: number) => {
+const createPaypalOrder = async (orderItems: OrderItem[],itemTotal: number,shippingFee: number,orderId: string) => {
     try{
           const {body,...httpResponse} = await paypalOrderCheckout.createOrder({
               body : {
@@ -37,7 +37,7 @@ const createPaypalOrder = async (orderItems: OrderItem[],itemTotal: number,shipp
                       paymentMethodPreference: PayeePaymentMethodPreference.ImmediatePaymentRequired,
                       landingPage: PaypalExperienceLandingPage.Login,
                       userAction: PaypalExperienceUserAction.PayNow,
-                      returnUrl: "http://localhost:3000/payment-capture",
+                      returnUrl: "http://localhost:3000/payment-capture?orderId="+orderId,
                       cancelUrl: "http://localhost:3000/payment-cancel"
                       }
                     }
@@ -93,8 +93,20 @@ const CapturePaypalOrder = async (paymentId: string) => {
 
 export const captureOrder = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-        const { paymentId } = req.body;
+        const { paymentId, orderId } = req.body;
+        const order = await Order.findById(orderId);
+        
+        if (!order) {
+          res.status(404).json({ message: "Order not found" });
+          return
+        }
+        
         const captureOrder = await CapturePaypalOrder(paymentId as string);
+        
+        order.paymentId = paymentId;
+        order.paymentStatus = "paid";
+        await order.save();
+
         res.status(200).json(captureOrder);
         return
     } catch (error) {
@@ -228,12 +240,7 @@ export const createOrder = async (req: AuthRequest, res: Response): Promise<void
       let total = (shippingFee+itemTotal) - discountAmount;
       if (total < 0) total = 0; // Ensure total is not negative
      
-      // paymment using paypal
-      if (paymentMethod === "paypal") {
-        const paypalOrder = await createPaypalOrder(orderProducts,itemTotal,shippingFee);
-        res.status(200).json(paypalOrder);
-        return;
-      }
+      
       // Create the order document using the product snapshots
       const order = new Order({
         userId: req.user.id,
@@ -246,6 +253,17 @@ export const createOrder = async (req: AuthRequest, res: Response): Promise<void
       });
       
       await order.save({ session });
+
+      // paymment using paypal
+      if (paymentMethod === "paypal") {
+        const paypalOrder = await createPaypalOrder(orderProducts,itemTotal,shippingFee,order._id.toString());
+        
+        await session.commitTransaction();
+        session.endSession();
+        
+        res.status(200).json(paypalOrder);
+        return;
+      }
       
       // Commit the transaction
       await session.commitTransaction();

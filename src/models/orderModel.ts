@@ -14,6 +14,7 @@ interface IOrder extends Document {
     total: number;
     date: Date;
     status: string;
+    paymentId: string;
     paymentMethod: string;
     paymentStatus: string;
     address: string;
@@ -37,6 +38,7 @@ const OrderSchema: Schema = new Schema<IOrder>(
       total: { type: Number, required: true },
       date: { type: Date, required: true },
       status: { type: String, default: "pending" },
+      paymentId: {type: String, default: ""},
       paymentMethod: { type: String, required: true },
       paymentStatus: { type: String, default: "pending" },
       address: { type: String, required: true },
