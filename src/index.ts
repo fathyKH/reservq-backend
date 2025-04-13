@@ -15,6 +15,7 @@ import customerRoute from "./routes/customerRoute";
 import profileRoute from "./routes/profileRoute";
 import commentRoute from "./routes/commentRoute";
 import reviewRoute from "./routes/reviewRoute";
+import webhooksRoute from "./routes/webhooksRoute";
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument  from '../openapi.json';
 
@@ -22,9 +23,11 @@ dotenv.config();
 connectDB();
 
 const app = express();
+app.use(cors());
+
+app.use("/api/v1", webhooksRoute);
 
 app.use(express.json());
-app.use(cors());
 
 scheduleUpdateMaterializedView();
 

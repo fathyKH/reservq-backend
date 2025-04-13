@@ -6,6 +6,7 @@ import Product from "../models/productModel";
 import Discount from "../models/discountModel";
 import paypal from "../config/paypal";
 import mongoose from "mongoose";
+import stripe from "../config/stripe";
 import {
   OrdersController,
   PaymentsController,
@@ -37,8 +38,8 @@ const createPaypalOrder = async (orderItems: OrderItem[],itemTotal: number,shipp
                       paymentMethodPreference: PayeePaymentMethodPreference.ImmediatePaymentRequired,
                       landingPage: PaypalExperienceLandingPage.Login,
                       userAction: PaypalExperienceUserAction.PayNow,
-                      returnUrl: "http://localhost:3000/payment-capture?orderId="+orderId,
-                      cancelUrl: "http://localhost:3000/payment-cancel"
+                      returnUrl: `${process.env.CLIENT_URL}/payment-capture?orderId=${orderId}`,
+                      cancelUrl: `${process.env.CLIENT_URL}/payment-cancel`
                       }
                     }
                  },
@@ -114,6 +115,8 @@ export const captureOrder = async (req: AuthRequest, res: Response): Promise<voi
         return
     }
 }
+
+
 export const getOrder = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
         // Find the order by ID from the request parameters
@@ -263,6 +266,50 @@ export const createOrder = async (req: AuthRequest, res: Response): Promise<void
         
         res.status(200).json(paypalOrder);
         return;
+      } else if (paymentMethod === "card") {
+        try{
+          const paymentIntent = await stripe.paymentIntents.create({
+          amount: Math.round(total * 100),
+          currency: "usd",
+          payment_method_types: ["card"],
+          receipt_email: req.user.email,
+          metadata: {
+            orderId: order._id.toString(),
+          },
+        })
+        if (!paymentIntent) {
+          throw new ApplicationError("Stripe Payment failed");
+        }
+
+        await session.commitTransaction();
+        session.endSession();
+        
+        res.status(200).json({clientSecret : paymentIntent.client_secret});
+        return
+        
+        } catch (error: any) {
+            throw new ApplicationError(error.message, 500);
+            console.log(error)
+        }
+        /* const stripeOrder = await stripe.checkout.sessions.create({
+          payment_method_types: ['card'],
+          mode: 'payment',
+          line_items: [
+            {
+              price_data: {
+                currency: 'usd',
+                product_data: {
+                  name: 'Order',
+                },
+                unit_amount: Math.round(total * 100),
+              },
+              quantity: 1,
+            },
+          ],
+          success_url: `${process.env.CLIENT_URL}/payment-success`,
+          cancel_url: `${process.env.CLIENT_URL}/payment-cancel`,
+        }) */
+        
       }
       
       // Commit the transaction
@@ -321,3 +368,43 @@ export const deleteOrder = async (req: AuthRequest, res: Response): Promise<void
         res.status(500).json({ message: "Server error" });
     }
 };
+/* 
+def handle_employee_movement(self, track_id, point, employee_type):
+    test_point = (int(point[0]), int(point[1]))
+    in_area3 = cv2.pointPolygonTest(self.areas['area3'], test_point, False) >= 0
+    in_area4 = cv2.pointPolygonTest(self.areas['area4'], test_point, False) >= 0
+
+    # Initialize state if track_id is new
+    if track_id not in self.track_states:
+        if in_area3:
+            self.track_states[track_id] = "area3"
+        elif in_area4:
+            self.track_states[track_id] = "area4"
+        else:
+            self.track_states[track_id] = "outside"
+        return
+
+    current_state = self.track_states[track_id]
+
+    # Handle transitions
+    if current_state == "area3" and in_area4:
+        # Log entry (Area3 → Area4)
+        if track_id not in self.counted_enter2:
+            self.log_employee_entry(employee_type)
+            self.counted_enter2.add(track_id)
+        self.track_states[track_id] = "area4"
+
+    elif current_state == "area4" and in_area3:
+        # Log exit (Area4 → Area3)
+        if track_id not in self.counted_exit2:
+            self.log_employee_exit(employee_type)
+            self.counted_exit2.add(track_id)
+        self.track_states[track_id] = "area3"
+    elif current_state == 'outside' and in_area3:
+        self.track_states[track_id] = "area3"
+    elif current_state == 'outside' and in_area4:
+        self.track_states[track_id] = "area4"
+
+    # Update state if employee leaves both areas
+    if not in_area3 and not in_area4:
+        self.track_states[track_id] = "outside" */
