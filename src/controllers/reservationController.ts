@@ -13,6 +13,13 @@ export const createReservation = async (req: AuthRequest, res: Response) => {
             res.status(400).json({ error: "All fields are required" });
             return;
     }
+    if (location !== "Indoor" && location !== "Outdoor") {
+        res.status(400).json({ error: "Invalid location" });
+    }
+    if (date < new Date().toISOString().split('T')[0]) {
+        res.status(400).json({ error: "Date must be in the future" });
+        return
+    }
 
     try {
         const profileId = await Customer.findOne({userId:req.user.id},{id:1} );
